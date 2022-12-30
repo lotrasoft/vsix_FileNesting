@@ -31,7 +31,7 @@ namespace MadsKristensen.FileNesting
             await JoinableTaskFactory.SwitchToMainThreadAsync();
             await Logger.Initialize(this, Vsix.Name);
 
-            if (GetService(typeof(IMenuCommandService)) is OleMenuCommandService mcs)
+            if (await GetServiceAsync(typeof(IMenuCommandService)) is OleMenuCommandService mcs)
             {
                 CommandID commandId = new CommandID(PackageGuids.guidFileNestingCmdSet, PackageIds.NestingMenu);
                 OleMenuCommand menuCommand = new OleMenuCommand((s, e) => { }, commandId);
@@ -50,6 +50,8 @@ namespace MadsKristensen.FileNesting
 
         private void ShowMenu(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             OleMenuCommand menu = (OleMenuCommand)sender;
             ProjectItem item = Helpers.GetSelectedItems().FirstOrDefault();
 
